@@ -20,8 +20,8 @@ def sentiment_predict(new_sentence):
   new_sentence = [word for word in new_sentence if not word in stopwords]
   encoded = tokenizer.texts_to_sequences([new_sentence])
   pad_new = pad_sequences(encoded, maxlen = max_len)
-
   score = float(loaded_model.predict(pad_new))
+
   if(score > 0.5):
     print("{:.2f}% 확률로 긍정 리뷰입니다.".format(score * 100))
   else:
