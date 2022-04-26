@@ -18,20 +18,22 @@ print('전체 리뷰 개수 :',len(total_data)) # 전체 리뷰 개수 출력
 print(total_data[:5])
 
 # 2. 훈련 데이터와 테스트 데이터 분리
-# 평점 4, 5 - 레이블 1, 평점 1, 2, 3 - 레이블 0
+# 평점 4, 5 - 레이블 1, 평점 1, 2 - 레이블 0
 total_data['label'] = np.select([total_data.ratings > 3], [1], default=0)
 print(total_data[:5])
+# (4, 199908, 2)
 print(total_data['ratings'].nunique(), total_data['reviews'].nunique(), total_data['label'].nunique())
 total_data.drop_duplicates(subset=['reviews'], inplace=True) # reviews 열에서 중복인 내용이 있다면 중복 제거
 print('총 샘플의 수 :',len(total_data))      # 총 샘플의 수
-print(total_data.isnull().values.any())    # NULL 값 유무\
+print(total_data.isnull().values.any())    # NULL 값 유무 - False
 # 훈련 데이터와 테스트 데이터 3:1 비율로 분리
 train_data, test_data = train_test_split(total_data, test_size = 0.25, random_state = 42)
-print('훈련용 리뷰의 개수 :', len(train_data))
-print('테스트용 리뷰의 개수 :', len(test_data))
+print('훈련용 리뷰의 개수 :', len(train_data))   # 훈련용 리뷰의 개수 : 149931
+print('테스트용 리뷰의 개수 :', len(test_data))  # 테스트용 리뷰의 개수 : 49977
 
 # 3. 레이블 분포 확인
 train_data['label'].value_counts().plot(kind = 'bar')
+# 레이블 분포: 0 - 74918, 1 - 75013
 print(train_data.groupby('label').size().reset_index(name = 'count'))
 
 # 4. 데이터 정제
@@ -41,8 +43,8 @@ train_data['reviews'].replace('', np.nan, inplace=True)
 print(train_data.isnull().sum())
 test_data.drop_duplicates(subset = ['reviews'], inplace=True) # 중복 제거
 test_data['reviews'] = test_data['reviews'].str.replace("[^ㄱ-ㅎㅏ-ㅣ가-힣 ]","") # 정규 표현식 수행
-test_data['reviews'].replace('', np.nan, inplace=True) # 공백은 Null 값으로 변경
-test_data = test_data.dropna(how='any') # Null 값 제거
+test_data['reviews'].replace('', np.nan, inplace=True) # 공백은 NULL 값으로 변경
+test_data = test_data.dropna(how='any') # NULL 값 제거
 print('전처리 후 테스트용 샘플의 개수 :',len(test_data))
 
 # 5. 토큰화
@@ -62,6 +64,7 @@ negative_word_count = Counter(negative_words)
 print(negative_word_count.most_common(20))
 positive_word_count = Counter(positive_words)
 print(positive_word_count.most_common(20))
+
 # 길이 분포 확인
 fig,(ax1,ax2) = plt.subplots(1,2,figsize=(10,5))
 text_len = train_data[train_data['label']==1]['tokenized'].map(lambda x: len(x))
