@@ -1,5 +1,7 @@
 import json
+import pandas as pd
 import requests
+from bs4 import BeautifulSoup as bs
 
 
 def news_list():
@@ -16,4 +18,23 @@ def news_list():
         dic[sid] = list
     return dic
 
-print(news_list())
+
+def news_text(articleId):
+    url = 'https://n.news.naver.com/mnews/article/'+articleId
+    res = requests.get(url, headers={'User-Agent': 'Mozilla/5.0'}).text
+    soup = bs(res, 'html.parser')
+    div = soup.select_one('#dic_area').text.replace('\n','').replace('\t','')
+    return div
+
+
+list = news_list()
+col = ['text', 'label']
+text_list = []
+for i in range(0, 6):
+    sid = '10'+str(i)
+    for data in list[sid]:
+        text_list.append([news_text(data), i])
+
+news_data = pd.DataFrame(text_list, columns=col)
+news_data.to_csv('dataset.csv', encoding='utf-8-sig')
+print(news_data)
