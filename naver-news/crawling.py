@@ -28,13 +28,18 @@ def news_text(articleId):
 
 
 list = news_list()
-col = ['text', 'label']
 text_list = []
+label_list = []
 for i in range(0, 6):
     sid = '10'+str(i)
     for data in list[sid]:
-        text_list.append([news_text(data), i])
+        label_list.append(i)
+        text_list.append(news_text(data))
 
-news_data = pd.DataFrame(text_list, columns=col)
-news_data.to_csv('dataset.csv', encoding='utf-8-sig')
+news_data = pd.DataFrame({
+    'label': label_list,
+    'text': text_list,
+})
+
+news_data.to_csv('dataset.csv', encoding='utf-8-sig', index=False)
 print(news_data)
