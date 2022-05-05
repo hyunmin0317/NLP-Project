@@ -4,9 +4,9 @@ import requests
 from bs4 import BeautifulSoup as bs
 
 
-def news_list():
+def news_list(page):
     dic = {}
-    url = 'https://news.naver.com/main/mainNews.naver?date=%2000:00:00&page=1'
+    url = 'https://news.naver.com/main/mainNews.naver?date=%2000:00:00&page='+str(page)
     res = requests.get(url, headers={'User-Agent': 'Mozilla/5.0'}).json()
     data = json.loads(res['airsResult'])['result']
 
@@ -26,15 +26,18 @@ def news_text(articleId):
     div = soup.select_one('#dic_area').text.replace('\n','').replace('\t','')
     return div
 
-
-list = news_list()
 text_list = []
 label_list = []
-for i in range(0, 6):
-    sid = '10'+str(i)
-    for data in list[sid]:
-        label_list.append(i)
-        text_list.append(news_text(data))
+
+
+for i in range(1, 10):
+    print(f'Epoch: {i}')
+    list = news_list(i)
+    for i in range(0, 6):
+        sid = '10'+str(i)
+        for data in list[sid]:
+            label_list.append(i)
+            text_list.append(news_text(data))
 
 news_data = pd.DataFrame({
     'label': label_list,
