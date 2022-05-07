@@ -30,7 +30,7 @@ text_list = []
 label_list = []
 
 
-for i in range(1, 10):
+for i in range(1, 50):
     print(f'Epoch: {i}')
     list = news_list(i)
     for i in range(0, 6):
